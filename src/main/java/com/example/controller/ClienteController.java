@@ -2,6 +2,12 @@ package com.example.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +25,7 @@ import com.example.service.ClienteService;
 
 import jakarta.validation.Valid;
 
+@Tag(name = "Clientes", description = "Operações de cadastro e gestão de clientes")
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
@@ -29,6 +36,9 @@ public class ClienteController {
 		this.clienteService = clienteService;
 	}
 
+	@Operation(summary = "Criar cliente", description = "Cadastra um novo cliente no sistema", responses = {
+			@ApiResponse(responseCode = "200", description = "Cliente criado com sucesso", content = @Content(schema = @Schema(implementation = ClienteResponseDTO.class))),
+			@ApiResponse(responseCode = "400", description = "Erro de validação") })
 	@PostMapping
 	public ClienteResponseDTO criar(@Valid @RequestBody ClienteRequestDTO dto) {
 		return clienteService.criar(dto);
