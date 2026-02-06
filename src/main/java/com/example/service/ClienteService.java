@@ -1,8 +1,10 @@
 package com.example.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.domain.Cliente;
 import com.example.dto.ClienteRequestDTO;
@@ -20,8 +22,7 @@ public class ClienteService {
 	}
 
 	private ClienteResponseDTO toResponseDTO(Cliente cliente) {
-		return new ClienteResponseDTO(cliente.getId(), cliente.getNome(), cliente.getEmail(), cliente.getTelefone(),
-				cliente.getAtivo(), cliente.getDataCadastro());
+		return new ClienteResponseDTO(cliente);
 	}
 
 	public ClienteResponseDTO criar(ClienteRequestDTO dto) {
@@ -38,20 +39,36 @@ public class ClienteService {
 		return toResponseDTO(clienteRepository.save(cliente));
 	}
 
-	public List<ClienteResponseDTO> listar() {
-		return clienteRepository.findAll().stream().map(this::toResponseDTO).toList();
+	public Page<ClienteResponseDTO> listarPaginado(String nome, String email, Pageable pageable) {
+
+		Page<Cliente> page;
+
+		if (nome != null && !nome.isBlank()) {
+			page = clienteRepository.findByNomeContainingIgnoreCase(nome, pageable);
+		} else if (email != null && !email.isBlank()) {
+			page = clienteRepository.findByEmailContainingIgnoreCase(email, pageable);
+		} else {
+			page = clienteRepository.findAll(pageable);
+		}
+
+		return page.map(ClienteResponseDTO::new);
 	}
 
 	public ClienteResponseDTO buscarPorId(Long id) {
 		Cliente cliente = clienteRepository.findById(id)
-				.orElseThrow(() -> new RegraNegocioException("Cliente não encontrado"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
 
 		return toResponseDTO(cliente);
 	}
 
 	public ClienteResponseDTO atualizar(Long id, ClienteRequestDTO dto) {
+
 		Cliente cliente = clienteRepository.findById(id)
-				.orElseThrow(() -> new RegraNegocioException("Cliente não encontrado"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+
+		if (clienteRepository.existsByEmail(dto.getEmail()) && !cliente.getEmail().equals(dto.getEmail())) {
+			throw new RegraNegocioException("Email já cadastrado");
+		}
 
 		cliente.setNome(dto.getNome());
 		cliente.setEmail(dto.getEmail());
@@ -61,10 +78,10 @@ public class ClienteService {
 	}
 
 	public void deletar(Long id) {
-		if (!clienteRepository.existsById(id)) {
-			throw new RegraNegocioException("Cliente não encontrado");
-		}
+		Cliente cliente = clienteRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
 
-		clienteRepository.deleteById(id);
+		clienteRepository.delete(cliente);
 	}
+
 }

@@ -2,46 +2,54 @@ package com.example.dto;
 
 import java.time.LocalDateTime;
 
+import com.example.domain.Cliente;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Dados de retorno do cliente")
 public class ClienteResponseDTO {
 
-    private Long id;
-    private String nome;
-    private String email;
-    private String telefone;
-    private Boolean ativo;
-    private LocalDateTime dataCadastro;
+	@Schema(example = "1")
+	private Long id;
 
-    public ClienteResponseDTO(Long id, String nome, String email, String telefone,
-                              Boolean ativo, LocalDateTime dataCadastro) {
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-        this.telefone = telefone;
-        this.ativo = ativo;
-        this.dataCadastro = dataCadastro;
-    }
+	private String nome;
+	private String email;
+	private String telefone;
+	private Boolean ativo;
 
-    public Long getId() {
-        return id;
-    }
+	@Schema(example = "2026-02-06T14:47:38")
+	private LocalDateTime dataCadastro;
 
-    public String getNome() {
-        return nome;
-    }
+	public ClienteResponseDTO(Cliente cliente) {
+		this.id = cliente.getId();
+		this.nome = cliente.getNome();
+		this.email = cliente.getEmail();
+		this.telefone = cliente.getTelefone();
+		this.ativo = cliente.getAtivo();
+		this.dataCadastro = cliente.getDataCadastro();
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getTelefone() {
-        return telefone;
-    }
+	public String getNome() {
+		return nome;
+	}
 
-    public Boolean getAtivo() {
-        return ativo;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public LocalDateTime getDataCadastro() {
-        return dataCadastro;
-    }
+	public String getTelefone() {
+		return telefone;
+	}
+
+	public Boolean getAtivo() {
+		return ativo;
+	}
+
+	public LocalDateTime getDataCadastro() {
+		return dataCadastro;
+	}
 }
