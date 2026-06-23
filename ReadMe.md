@@ -14,7 +14,7 @@ O objetivo principal deste projeto é **portfólio**, demonstrando domínio dos 
 - Spring Data JPA  
 - Hibernate  
 - Maven  
-- Banco de dados H2 (em memória)  
+- Banco de dados H2 (em memória) - Migrado para PostgreSQL 
 - Swagger / OpenAPI  
 
 ---
