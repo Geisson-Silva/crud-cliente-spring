@@ -2,8 +2,11 @@ package com.example.service;
 
 import java.math.BigDecimal;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.domain.Lancamento;
 import com.example.domain.TipoLancamento;
 import com.example.dto.ResumoFinanceiroDTO;
 import com.example.repository.LancamentoRepository;
@@ -31,4 +34,13 @@ public class LancamentoService {
 
 	}
 
+	// Método para listar TODOS os lançamentos com paginação
+	public Page<Lancamento> listarTodos(Pageable pageable) {
+		return lancamentoRepository.findAll(pageable);
+	}
+
+	// Método para listar filtrando por tipo com paginação
+	public Page<Lancamento> listarPorTipo(TipoLancamento tipo, Pageable pageable) {
+		return lancamentoRepository.findByTipo(tipo, pageable);
+	}
 }
